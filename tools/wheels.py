@@ -360,7 +360,7 @@ def _check_git_status(srcdir):
     cmd = ["git", "status"]
 
     try:
-        output = subprocess.check_output(cmd, cwd=srcdir)
+        output = subprocess.run(cmd, cwd=srcdir, check=True, capture_output=True, text=True).stdout
     except subprocess.CalledProcessError as err:
         LOGGER.error("Failed to run %s: %s", cmd, err)
         return False
