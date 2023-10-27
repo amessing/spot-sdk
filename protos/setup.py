@@ -88,6 +88,7 @@ class proto_build(distutils.cmd.Command, object):
                 file_relative_to_root = os.path.join(cwd_relative_to_root, f)
                 # the protoc.main discards the first argument, assuming it's the program.
                 args = ('garbage', file_relative_to_root, "--python_out=" + output_dir,
+                        "--mypy_out=" + output_dir,
                         "--grpc_python_out=" + output_dir, "-I.",
                         "-I" + pkg_resources.resource_filename('grpc_tools', '_proto'))
                 if self.verbose:
@@ -125,7 +126,7 @@ setuptools.setup(
     packages=[subdir[0].replace(os.path.sep, '.') for subdir in os.walk('bosdyn')],
     # Gets populated in our BuildPy.
     package_dir={},
-    setup_requires=add_pathlib_version(['grpcio-tools', 'wheel']),
+    setup_requires=add_pathlib_version(['grpcio-tools', 'wheel', 'mypy-protobuf']),
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
