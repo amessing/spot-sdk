@@ -67,6 +67,9 @@ class proto_build(distutils.cmd.Command, object):
             if not init_file.exists():
                 pkg.mkdir(parents=True, exist_ok=True)
                 init_file.touch()
+            py_type_file = pkg.joinpath('py.typed')
+            if not py_type_file.exists():
+                py_type_file.touch()
             if do_pkg_extension:
                 with open(str(init_file), 'w') as f:
                     f.write("__path__ = __import__('pkgutil').extend_path(__path__, __name__)")
@@ -87,7 +90,8 @@ class proto_build(distutils.cmd.Command, object):
                     continue
                 file_relative_to_root = os.path.join(cwd_relative_to_root, f)
                 # the protoc.main discards the first argument, assuming it's the program.
-                args = ('garbage', file_relative_to_root, "--python_out=" + output_dir,
+                args = ('garbage', file_relative_to_root, 
+                        "--python_out=" + output_dir,
                         "--mypy_out=" + output_dir,
                         "--grpc_python_out=" + output_dir, "-I.",
                         "-I" + pkg_resources.resource_filename('grpc_tools', '_proto'))
@@ -107,7 +111,6 @@ def add_pathlib_version(requirements_list):
         return requirements_list + ['pathlib2']
     return requirements_list
 
-
 setuptools.setup(
     name="bosdyn-api",
     version=SDK_VERSION,
@@ -125,7 +128,7 @@ setuptools.setup(
     # Walk the immediate subdir 'bosdyn' and build python package names out of the result.
     packages=[subdir[0].replace(os.path.sep, '.') for subdir in os.walk('bosdyn')],
     # Gets populated in our BuildPy.
-    package_dir={},
+    package_data={'': ['py.typed', '*.pyi']},
     setup_requires=add_pathlib_version(['grpcio-tools', 'wheel', 'mypy-protobuf']),
     classifiers=[
         "Programming Language :: Python :: 3.6",
